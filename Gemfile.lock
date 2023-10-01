@@ -1,0 +1,13 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    midi-smtp-server (3.2.1)
+
+PLATFORMS
+  arm64-darwin-22
+
+DEPENDENCIES
+  midi-smtp-server
+
+BUNDLED WITH
+   2.4.10
