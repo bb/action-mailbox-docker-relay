@@ -92,3 +92,18 @@ services:
     ports:
       - "0.0.0.0:25:25
 ```
+
+## Alternative approaches
+
+You *do not* need this, if you use an external email provider which provides webhooks like those described in the [Action Mailer Basics Rails Guide](https://guides.rubyonrails.org/action_mailbox_basics.html) (Mailgun, Mandrill, Postmark, Sendgrid).
+
+You *do not* need this, if you run and configure your own mail server like those described in the [Action Mailer Basics Rails Guide](https://guides.rubyonrails.org/action_mailbox_basics.html) (Exim, Postfix, Qmail).
+
+You do not need this, if you use Amazon SES/SNS. In this case you can use other 3rd party integrations like [action_mailbox_amazon_ingress](https://github.com/bobf/action_mailbox_amazon_ingress).
+
+[Action-mailbox-docker-postfix-relay](https://github.com/Loumaris/action-mailbox-docker-postfix-relay) by Loumaris / Christian Heimke provides roughly the same features, however you *must* build the Docker images yourself as the configuration will be hardcoded. It runs a full Postfix server and contains a minimal Rails app while this project only runs a single Ruby executable which receives the Mail and triggers the webhook. Their Docker image size on disk is ~675 MB while this is <100 MB.
+
+[PostalServer allows receiving e-mail by HTTP](https://docs.postalserver.io/developer/http-payloads), however you'll need a custom Action Mailbox ingress to process their raw message payload.
+
+[mail_room](https://github.com/tpitale/mail_room) gem allows polling IMAP mailboxes, so you could use it with GMail. It also works with Outlook / Hotmail.
+
