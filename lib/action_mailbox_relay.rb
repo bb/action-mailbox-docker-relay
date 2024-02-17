@@ -19,10 +19,9 @@ module ActionMailboxDockerRelay
 
 
       raw_email = ctx[:message][:data]
-      raw_email.prepend("X-Original-To: ", ctx[:envelope][:to], "\n")
-      # raw_email.prepend("X-Envelope-To: ", ctx[:envelope][:to], "\n")
-      # raw_email.prepend("X-Original-From: ", ctx[:envelope][:from], "\n")
-      # raw_email.prepend("X-Envelope-From: ", ctx[:envelope][:from], "\n")
+      ctx[:envelope][:to].reverse.each do |to|
+        raw_email.prepend("X-Original-To: ", to, "\n")
+      end
 
       ActionMailbox::Relayer.new(url: url, password: ingress_password).relay(raw_email).tap do |result|
         print result.message

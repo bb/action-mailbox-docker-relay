@@ -1,7 +1,7 @@
 This provides an SMTP Service which posts any e-mail it receives to an HTTP endpoint. The primary use case is for Ruby on Rails' ActionMailbox.
 
 It can be used e.g. as a Transport behind a Relay Domain behind a real mail server like Mailcow. No guarantees are made when used directly on the public internet.
-There's no filtering nor authentication... but PR's are welcome.
+There's no filtering nor authentication... but PRs are welcome.
 
 Source: https://github.com/bb/action-mailbox-docker-relay
 
