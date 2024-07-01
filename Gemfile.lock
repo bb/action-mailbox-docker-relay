@@ -4,10 +4,10 @@ GEM
     midi-smtp-server (3.2.1)
 
 PLATFORMS
-  arm64-darwin-22
+  ruby
 
 DEPENDENCIES
   midi-smtp-server
 
 BUNDLED WITH
-   2.5.6
+   2.5.14
