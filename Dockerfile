@@ -1,4 +1,4 @@
-FROM ruby:3.3.3-alpine
+FROM ruby:3.3.4-alpine
 
 LABEL org.opencontainers.image.authors="Benjamin Bock <bb-docker-images@bock.be>"
 LABEL org.opencontainers.image.licenses="MIT"
