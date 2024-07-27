@@ -13,7 +13,12 @@ Docker Hub: https://hub.docker.com/r/bock/action-mailbox-docker-relay
 * `URL` (required): the URL which the e-mails should be posted to, e.g. `https://example.org/rails/action_mailbox/relay/inbound_emails`.
 * `HOSTS` (optional, default: `0.0.0.0`): the host or hosts (comma separated) which the server should bind to.
 * `PORTS` (optional, default: `2525`): the port or ports (comma separated) which the server should listen on.
-* `LOG_LEVEL` (optional, default: `INFO`, fallback to `DEBUG` if unknown, case-insensitive): see https://rubyapi.org/o/logger
+* `LOG_LEVEL` (optional, default: `WARN`, fallback to `DEBUG` if unknown, case-insensitive): see https://rubyapi.org/o/logger
+  * ERROR: only failures printed to stdout
+  * WARN: messages on startup, shutdown, transient errors
+  * INFO: one line per mail processed
+  * DEBUG: everything
+
 
 ## Example Docker Compose file
 

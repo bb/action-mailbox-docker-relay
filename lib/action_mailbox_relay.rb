@@ -15,7 +15,7 @@ module ActionMailboxDockerRelay
     # get each message after DATA <message> .
     def on_message_data_event(ctx)
       # Output for debug
-      logger.debug("mail received at: [#{ctx[:server][:local_ip]}:#{ctx[:server][:local_port]}] from: [#{ctx[:envelope][:from]}] for recipient(s): [#{ctx[:envelope][:to]}]...")
+      logger.debug("mail received at: [#{ctx[:server][:local_ip]}:#{ctx[:server][:local_port]}] from: #{ctx[:envelope][:from]} for recipient(s): #{ctx[:envelope][:to]}...")
 
 
       raw_email = ctx[:message][:data]
@@ -24,15 +24,15 @@ module ActionMailboxDockerRelay
       end
 
       ActionMailbox::Relayer.new(url: url, password: ingress_password).relay(raw_email).tap do |result|
-        print result.message
+        logger.info("Mail from: #{ctx[:envelope][:from]} for recipient(s): #{ctx[:envelope][:to]}")
 
         case
         when result.success?
-          logger.debug("SUCCESS")
+          logger.debug("SUCCESS: #{result.message}")
         when result.transient_failure?
-          logger.debug("TRANSIENT FAILURE")
+          logger.warn("TRANSIENT FAILURE: #{result.message}")
         else
-          logger.debug("UNKNOWN FAILURE")
+          logger.error("UNKNOWN FAILURE: #{result.message}")
         end
       end
     end
@@ -52,17 +52,17 @@ module ActionMailboxDockerRelay
     url, password = ENV.values_at("URL", "INGRESS_PASSWORD")
 
     if !url || url.length == 0
-      print "URL is required"
+      puts "URL is required"
       exit 111
     end
     if !password || password.length == 0
-      print "INGRESS_PASSWORD is required"
+      puts "INGRESS_PASSWORD is required"
       exit 112
     end
 
     hosts = ENV.fetch("HOSTS", "0.0.0.0")
     ports = ENV.fetch("PORTS", "2525")
-    logger_severity = Logger::SEV_LABEL.index ENV.fetch("LOG_LEVEL", "INFO").upcase # INFO if not present, DEBUG if wrong/unkown
+    logger_severity = Logger::SEV_LABEL.index ENV.fetch("LOG_LEVEL", "WARN").upcase # WARN if not present, DEBUG if wrong/unkown
 
     server = ActionMailboxDockerRelay::Server.new hosts: hosts, ports: ports, logger_severity: logger_severity
     server.url = url
@@ -83,21 +83,21 @@ module ActionMailboxDockerRelay
     end
 
     # Output for debug
-    server.logger.info("Starting ActionMailboxDockerRelayServer [based on MidiSmtpServer #{MidiSmtpServer::VERSION::STRING}|#{MidiSmtpServer::VERSION::DATE}]")
+    server.logger.warn("Starting ActionMailboxDockerRelayServer [based on MidiSmtpServer #{MidiSmtpServer::VERSION::STRING}|#{MidiSmtpServer::VERSION::DATE}] relaying to #{url}")
 
     # setup exit code
     at_exit do
       # check to shutdown connection
       if server
         # Output for debug
-        server.logger.info('Ctrl-C interrupted, exit now...') if flag_status_ctrl_c_pressed
+        server.logger.warn('Ctrl-C interrupted, exit now...') if flag_status_ctrl_c_pressed
         # info about shutdown
         server.logger.info('Shutdown ActionMailboxDockerRelayServer...')
         # stop all threads and connections gracefully
         server.stop
       end
       # Output for debug
-      server.logger.info('ActionMailboxDockerRelayServer down!')
+      server.logger.warn('ActionMailboxDockerRelayServer down!')
     end
 
     # Start the server
