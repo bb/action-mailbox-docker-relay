@@ -47,6 +47,8 @@ module ActionMailboxDockerRelay
   end
 
   def self.main
+    $stdout.sync = true
+
     url, password = ENV.values_at("URL", "INGRESS_PASSWORD")
 
     if !url || url.length == 0
@@ -60,8 +62,9 @@ module ActionMailboxDockerRelay
 
     hosts = ENV.fetch("HOSTS", "0.0.0.0")
     ports = ENV.fetch("PORTS", "2525")
+    logger_severity = Logger::SEV_LABEL.index ENV.fetch("LOG_LEVEL", "INFO").upcase # INFO if not present, DEBUG if wrong/unkown
 
-    server = ActionMailboxDockerRelay::Server.new hosts: hosts, ports: ports
+    server = ActionMailboxDockerRelay::Server.new hosts: hosts, ports: ports, logger_severity: logger_severity
     server.url = url
     server.ingress_password = password
 
@@ -94,7 +97,7 @@ module ActionMailboxDockerRelay
         server.stop
       end
       # Output for debug
-      server.logger.info('MySmtpd down!')
+      server.logger.info('ActionMailboxDockerRelayServer down!')
     end
 
     # Start the server
