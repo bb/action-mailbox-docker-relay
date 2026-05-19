@@ -1,13 +1,17 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    base64 (0.3.0)
+    logger (1.7.0)
     midi-smtp-server (3.2.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  base64
+  logger
   midi-smtp-server
 
 BUNDLED WITH
-   2.6.3
+  4.0.11
