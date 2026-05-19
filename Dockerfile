@@ -1,4 +1,20 @@
-FROM ruby:4.0.4-alpine
+ARG RUBY_IMAGE=ruby:4.0.4-alpine3.23
+
+FROM ${RUBY_IMAGE} AS builder
+
+WORKDIR "/relay"
+COPY Gemfile Gemfile.lock /relay/
+
+ENV BUNDLE_DEPLOYMENT=1
+ENV BUNDLE_PATH=/relay/vendor/bundle
+RUN bundle install
+
+COPY lib/* /relay
+
+FROM dhi.io/${RUBY_IMAGE}
+
+ENV GEM_HOME=/relay/vendor/bundle/ruby/4.0.0
+ENV GEM_PATH=/relay/vendor/bundle/ruby/4.0.0
 
 LABEL org.opencontainers.image.authors="Benjamin Bock <bb-docker-images@bock.be>"
 LABEL org.opencontainers.image.licenses="MIT"
@@ -6,15 +22,7 @@ LABEL org.opencontainers.image.licenses="MIT"
 EXPOSE 2525
 
 WORKDIR "/relay"
-COPY Gemfile Gemfile.lock /relay/
+COPY --from=builder /relay /relay
 
-RUN apk upgrade --no-cache && \
-    gem update --system && \
-	gem uninstall -i /usr/local/lib/ruby/gems/4.0.0 net-imap bigdecimal && \
-	gem cleanup && \
-	bundle config set deployment 'true' && \
-	bundle install
+CMD ["ruby", "-w", "/relay/action_mailbox_relay.rb"]
 
-COPY lib/* /relay
-
-CMD ["bundle", "exec", "ruby", "-w", "./action_mailbox_relay.rb"]
